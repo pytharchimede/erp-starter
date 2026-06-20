@@ -1,7 +1,8 @@
 {
-  "name": "starter/erp-framework-like",
+  "name": "pytharchimede/erp-starter",
   "description": "Starter PHP natif framework-like pour ERP, portail modules, site public et composants réutilisables.",
   "type": "project",
+  "license": "MIT",
   "require": {
     "php": ">=8.2"
   },
@@ -9,7 +10,9 @@
     "phpunit/phpunit": "^12.5"
   },
   "autoload": {
-    "psr-4": {"App\\": "app/"}
+    "psr-4": {
+      "App\\": "app/"
+    }
   },
   "scripts": {
     "serve": "php -S localhost:8000 -t public",
