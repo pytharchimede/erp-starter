@@ -1,0 +1,44 @@
+name: Starter Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, intl, pdo, pdo_mysql
+          tools: composer
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check PHP syntax
+        run: find . -type f -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --display-all-issues
+
+      - name: Check starter structure
+        run: |
+          test -f composer.json
+          test -d app
+          test -d config
+          test -d routes
+          test -d public
+          test -d tests
