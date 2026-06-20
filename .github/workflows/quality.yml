@@ -8,20 +8,24 @@ on:
 
 jobs:
   quality:
-    name: PHP quality checks
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: mbstring, intl, pdo, pdo_mysql
+          extensions: dom, xml, xmlwriter, mbstring, intl, pdo, pdo_mysql
           tools: composer:v2
           coverage: none
+
+      - name: Show versions
+        run: |
+          php -v
+          composer --version
 
       - name: Validate composer.json
         run: composer validate --no-check-publish
@@ -36,17 +40,17 @@ jobs:
             -print0 | xargs -0 -n1 php -l
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: ./vendor/bin/phpunit
 
       - name: Check starter structure
         run: |
           test -f composer.json
+          test -f composer.lock
           test -f phpunit.xml
           test -d app
           test -d bootstrap
           test -d config
-          test -d routes
           test -d public
+          test -d routes
           test -d tests
           test -d views
-          test -d storage
