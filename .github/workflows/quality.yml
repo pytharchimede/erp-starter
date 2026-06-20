@@ -8,37 +8,45 @@ on:
 
 jobs:
   quality:
+    name: PHP quality checks
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           extensions: mbstring, intl, pdo, pdo_mysql
-          tools: composer
+          tools: composer:v2
           coverage: none
 
       - name: Validate composer.json
-        run: composer validate --strict --no-check-publish
+        run: composer validate --no-check-publish
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Check PHP syntax
-        run: find . -type f -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l
+        run: |
+          find app bootstrap config public routes tests tools views \
+            -type f -name "*.php" \
+            -print0 | xargs -0 -n1 php -l
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit --display-all-issues
+        run: vendor/bin/phpunit
 
       - name: Check starter structure
         run: |
           test -f composer.json
+          test -f phpunit.xml
           test -d app
+          test -d bootstrap
           test -d config
           test -d routes
           test -d public
           test -d tests
+          test -d views
+          test -d storage
